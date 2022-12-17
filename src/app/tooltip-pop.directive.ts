@@ -18,14 +18,18 @@ import {
   FlexibleConnectedPositionStrategy,
   Overlay,
   OverlayRef,
+  STANDARD_DROPDOWN_ADJACENT_POSITIONS,
+  STANDARD_DROPDOWN_BELOW_POSITIONS,
 } from '@angular/cdk/overlay';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TemplatePortal } from '@angular/cdk/portal';
 
-export enum TooltipPopPosition {
-  TOP = 'top',
+export type TooltipPopPosition = 'top' | 'left';
+
+export enum TooltipPopPositionType {
   LEFT = 'left',
+  TOP = 'top',
 }
 
 @Directive({
@@ -37,10 +41,9 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
   @Input()
   closeOnClickOutside: boolean = false;
 
-  @Input('tooltipPopPosition') tooltipPopPosition: 'top' | 'left' =
-    TooltipPopPosition.LEFT;
+  @Input('tooltipPopPosition') tooltipPopPosition: TooltipPopPosition =
+    TooltipPopPositionType.LEFT;
 
-  @HostBinding() tabindex = 0;
   @HostListener('mouseover', ['$event'])
   onMouseOver(event) {
     this.attachOverlay();
@@ -97,23 +100,14 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
     const positionStrategy = this.overlay
       .position()
       .flexibleConnectedTo(this.elRef)
-      .withPositions([
-        new ConnectionPositionPair(
-          { originX: 'start', originY: 'bottom' },
-          { overlayX: 'start', overlayY: 'top' }
-        ),
-        new ConnectionPositionPair(
-          { originX: 'start', originY: 'top' },
-          { overlayX: 'start', overlayY: 'bottom' }
-        ),
-      ])
+      .withPositions(STANDARD_DROPDOWN_BELOW_POSITIONS)
       .withPush(false);
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
       scrollStrategy,
       hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
+      //backdropClass: 'cdk-overlay-transparent-backdrop',
     });
 
     this.overlayRef
