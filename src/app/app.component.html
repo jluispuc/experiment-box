@@ -6,14 +6,19 @@
 
   <div
     *ngFor="let i of elements"
-    vanTooltipPop
+    tooltipPop
     tooltipPopPosition="top"
+    [tooltipPopTrigger]="pop"
+    [closeOnClickOutside]="true"
     style="margin-right: 5px"
   >
     Info {{ i }}
-    <div class="tooltippoptext" style="width: 200px">
-      In publishing and graphic design. algo más que esto, entonces se hace una
-      descripción más grande para ir tomando el valor ya ver que pasa.
-    </div>
   </div>
 </div>
+
+<ng-template #pop>
+  <app-tooltip-pop-info>
+    In publishing and graphic design. algo más que esto, entonces se hace una
+    descripción más grande para ir tomando el valor ya ver que pasa.
+  </app-tooltip-pop-info>
+</ng-template>
