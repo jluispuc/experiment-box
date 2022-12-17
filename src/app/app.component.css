@@ -1,0 +1,63 @@
+p {
+  font-family: Lato;
+}
+
+.tooltippop {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted #ccc;
+  color: #006080;
+}
+
+.tooltippop .tooltippoptext {
+  visibility: hidden;
+  position: absolute;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  padding: 5px 0;
+  border-radius: 6px;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltippop:hover .tooltippoptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltippop-left {
+  bottom: auto;
+  right: 108%;
+}
+
+.tooltippop-left::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent #555;
+}
+
+.tooltippop-top {
+  left: 50%;
+}
+
+.tooltippop-top::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.center {
+  text-align: center;
+}
