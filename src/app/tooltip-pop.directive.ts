@@ -1,6 +1,7 @@
 import {
   Directive,
   ElementRef,
+  EmbeddedViewRef,
   Host,
   HostBinding,
   HostListener,
@@ -47,12 +48,12 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
   @HostListener('mouseover', ['$event'])
   onMouseOver(event) {
     this.attachOverlay();
-    //let pop = this.tooltipPopTrigger.elementRef.nativeElement;
+    let pop = this.embebedViewRef.rootNodes[0];
     //this.elRef.nativeElement.getElementsByClassName('tooltippoptext')[0];
 
-    /*if (
+    if (
       pop != undefined &&
-      this.tooltipPopPosition === TooltipPopPosition.LEFT
+      this.tooltipPopPosition === TooltipPopPositionType.LEFT
     ) {
       this.renderer.addClass(pop, 'tooltippop-left');
       this.renderer.setStyle(pop, 'top', `-${pop.clientHeight / 2 - 10}px`);
@@ -60,12 +61,13 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
 
     if (
       pop != undefined &&
-      this.tooltipPopPosition === TooltipPopPosition.TOP
+      this.tooltipPopPosition === TooltipPopPositionType.TOP
     ) {
+      console.log("work")
       this.renderer.addClass(pop, 'tooltippop-top');
       this.renderer.setStyle(pop, 'top', `-${pop.clientHeight}px`);
       this.renderer.setStyle(pop, 'margin-left', `-${pop.clientWidth / 2}px`);
-    }*/
+    }
   }
 
   @HostListener('mouseout', ['$event'])
@@ -75,6 +77,7 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
 
   private unsubscribe = new Subject();
   private overlayRef!: OverlayRef;
+  private embebedViewRef: EmbeddedViewRef<object>;
 
   constructor(
     @Host() private elRef: ElementRef,
@@ -127,7 +130,8 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
         this.vcr
       );
 
-      this.overlayRef.attach(periodSelectorPortal);
+      this.embebedViewRef = this.overlayRef.attach(periodSelectorPortal);
+      console.log(this.embebedViewRef.rootNodes);
     }
   }
 
