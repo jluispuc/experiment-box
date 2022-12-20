@@ -9,25 +9,12 @@ p {
   color: #006080;
 }
 
-.tooltippop .tooltippoptext {
+.tooltippoptext {
   visibility: hidden;
-  position: absolute;
-  width: 120px;
-  background-color: #555;
-  color: #fff;
-  padding: 5px 0;
-  border-radius: 6px;
-  z-index: 2000;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.tooltippop:hover .tooltippoptext {
-  visibility: visible;
-  opacity: 1;
 }
 
 .tooltippop-left {
+  visibility: visible;
   bottom: auto;
   right: 108%;
 }
@@ -40,11 +27,11 @@ p {
   margin-top: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent transparent #555;
+  border-color: transparent transparent transparent black;
 }
 
 .tooltippop-top {
-  left: 50%;
+  visibility: visible;
 }
 
 .tooltippop-top::after {
@@ -55,7 +42,7 @@ p {
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: #555 transparent transparent transparent;
+  border-color: black transparent transparent transparent;
 }
 
 .center {
