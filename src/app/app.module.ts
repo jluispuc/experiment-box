@@ -17,9 +17,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    OverlayModule,
     MatCardModule,
     MatIconModule,
-    OverlayModule,
+    
   ],
   declarations: [
     AppComponent,
