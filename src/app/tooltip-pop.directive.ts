@@ -27,10 +27,16 @@ import { takeUntil } from 'rxjs/operators';
 import { TemplatePortal } from '@angular/cdk/portal';
 
 export type TooltipPopPosition = 'top' | 'left';
+export type TooltipPopTriggerEvent = 'click' | 'mouseover';
 
 export enum TooltipPopPositionType {
   LEFT = 'left',
   TOP = 'top',
+}
+
+export enum TooltipPopTriggerEventType {
+  CLICK = 'click',
+  MOUSEOVER = 'mouseover',
 }
 
 @Directive({
@@ -40,44 +46,85 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
   @Input() tooltipPopTrigger!: TemplateRef<object>;
 
   @Input()
-  closeOnClickOutside: boolean = false;
+  closeOnClickOutside: boolean = true;
+
+  @Input() tooltipPopTriggerEvent: TooltipPopTriggerEvent =
+    TooltipPopTriggerEventType.CLICK;
 
   @Input('tooltipPopPosition') tooltipPopPosition: TooltipPopPosition =
-    TooltipPopPositionType.LEFT;
+    TooltipPopPositionType.TOP;
 
-  @HostListener('mouseover', ['$event'])
-  onMouseOver(event) {
-    this.attachOverlay();
-    let pop = this.embebedViewRef.rootNodes[0];
-    //this.elRef.nativeElement.getElementsByClassName('tooltippoptext')[0];
+  @HostListener('click', ['$event'])
+  onClick(event) {
+    if (this.tooltipPopTriggerEvent == TooltipPopTriggerEventType.CLICK) {
+      this.attachOverlay();
+      setTimeout(() => {
+        let pop = this.embebedViewRef.rootNodes[0];
+        if (
+          pop != undefined &&
+          this.tooltipPopPosition === TooltipPopPositionType.LEFT
+        ) {
+          this.renderer.addClass(pop, 'tooltippop-left');
+          //this.renderer.setStyle(pop, 'top', `-${pop.clientHeight / 2 - 10}px`);
+        }
 
-    if (
-      pop != undefined &&
-      this.tooltipPopPosition === TooltipPopPositionType.LEFT
-    ) {
-      this.renderer.addClass(pop, 'tooltippop-left');
-      this.renderer.setStyle(pop, 'top', `-${pop.clientHeight / 2 - 10}px`);
-    }
-
-    if (
-      pop != undefined &&
-      this.tooltipPopPosition === TooltipPopPositionType.TOP
-    ) {
-      console.log("work")
-      this.renderer.addClass(pop, 'tooltippop-top');
-      this.renderer.setStyle(pop, 'top', `-${pop.clientHeight}px`);
-      this.renderer.setStyle(pop, 'margin-left', `-${pop.clientWidth / 2}px`);
+        if (
+          pop != undefined &&
+          this.tooltipPopPosition === TooltipPopPositionType.TOP
+        ) {
+          this.renderer.addClass(pop, 'tooltippop-top');
+          /*this.renderer.setStyle(pop, 'top', `-${pop.clientHeight + 24}px`);
+          this.renderer.setStyle(
+            pop,
+            'margin-left',
+            `-${pop.clientWidth / 2}px`
+          );*/
+        }
+      }, 10);
     }
   }
 
+  @HostListener('mouseover', ['$event'])
+  onMouseOver(event) {
+    if (this.tooltipPopTriggerEvent == TooltipPopTriggerEventType.MOUSEOVER) {
+      this.attachOverlay();
+      setTimeout(() => {
+        let pop = this.embebedViewRef.rootNodes[0];
+        if (
+          pop != undefined &&
+          this.tooltipPopPosition === TooltipPopPositionType.LEFT
+        ) {
+          this.renderer.addClass(pop, 'tooltippop-left');
+          //this.renderer.setStyle(pop, 'top', `-${pop.clientHeight / 2 - 10}px`);
+        }
+
+        if (
+          pop != undefined &&
+          this.tooltipPopPosition === TooltipPopPositionType.TOP
+        ) {
+          this.renderer.addClass(pop, 'tooltippop-top');
+          /*this.renderer.setStyle(pop, 'top', `-${pop.clientHeight + 24}px`);
+          this.renderer.setStyle(
+            pop,
+            'margin-left',
+            `-${pop.clientWidth / 2}px`
+          );*/
+        }
+      }, 10);
+    }
+  }
   @HostListener('mouseout', ['$event'])
-  onMoiseOut(event) {
-    this.detachOverlay();
+  onMouseOut(event) {
+    if (this.tooltipPopTriggerEvent == TooltipPopTriggerEventType.MOUSEOVER) {
+      this.detachOverlay();
+    }
   }
 
   private unsubscribe = new Subject();
   private overlayRef!: OverlayRef;
   private embebedViewRef: EmbeddedViewRef<object>;
+  private offsetY: number;
+  private offsetX: number;
 
   constructor(
     @Host() private elRef: ElementRef,
@@ -99,18 +146,30 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
   }
 
   private createOverlay(): void {
+    this.offsetX = this.elRef.nativeElement.offsetLeft;
+    this.offsetY = this.elRef.nativeElement.offsetTop;
+
     const scrollStrategy = this.overlay.scrollStrategies.reposition();
     const positionStrategy = this.overlay
       .position()
       .flexibleConnectedTo(this.elRef)
-      .withPositions(STANDARD_DROPDOWN_BELOW_POSITIONS)
+      .withPositions([
+        {
+          originX: 'center',
+          originY: 'top',
+          overlayX: 'center',
+          overlayY: 'bottom',
+          offsetY: -this.offsetY,
+          offsetX: 0,
+        },
+      ])
       .withPush(false);
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
       scrollStrategy,
       hasBackdrop: true,
-      //backdropClass: 'cdk-overlay-transparent-backdrop',
+      backdropClass: 'cdk-overlay-transparent-backdrop',
     });
 
     this.overlayRef
@@ -124,6 +183,7 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
   }
 
   private attachOverlay(): void {
+    this.createOverlay();
     if (!this.overlayRef.hasAttached()) {
       const periodSelectorPortal = new TemplatePortal(
         this.tooltipPopTrigger,
@@ -131,7 +191,6 @@ export class TooltipPopDirective implements OnInit, OnDestroy {
       );
 
       this.embebedViewRef = this.overlayRef.attach(periodSelectorPortal);
-      console.log(this.embebedViewRef.rootNodes);
     }
   }
 
